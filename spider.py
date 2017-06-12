@@ -18,18 +18,17 @@ def get_film_url(num):
     return film_url
 
 def get_film_info(url):
+    # 使用content.decode()替代text，避免了返回网页源码乱码问题
     bt_response = requests.get(url).content.decode('utf-8')
-    # print(bt_response)
     # 获得影片名称
     film_name_pattern = re.compile('<meta property="og:video:alias" content="(.*)"/>')
     file_name = re.findall(film_name_pattern, bt_response)
     # 获得BT种子地址
     bt_pattern = re.compile('data-refb="(http:.*.torrent)"')
     bt_url = re.findall(bt_pattern, bt_response)
-    print(bt_url[0])
 
-    film_info = []
-    film_info[file_name] = bt_url[0]
+    film_info = {}
+    film_info[file_name[0]] = str(bt_url[0])
     return film_info
 
 if __name__ == '__main__':
