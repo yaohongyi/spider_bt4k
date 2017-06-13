@@ -39,7 +39,7 @@ def db_operate(data=None, operate_type='insert', **db_info):
     """
     :param data: 影片信息数据
     :param kwargs: 数据库连接信息
-    :return:
+    :return: insert操作返回插入的数据量，select操作返回所有查询出来的结果
     """
     conn = pymysql.connect(host=db_info['host'], port=db_info['port'], user=db_info['user'],
                            passwd=db_info['passwd'], db=db_info['db'], charset=db_info['charset'])
@@ -47,8 +47,8 @@ def db_operate(data=None, operate_type='insert', **db_info):
     if operate_type == 'insert':
         sql = 'insert into film_info(name, bt_url) VALUES(%s, %s)'
         for i in data:
-            cur.execute(sql, (i, data[i]))
-        return
+            data_num = cur.execute(sql, (i, data[i]))
+        return data_num
     if operate_type == 'select':
         sql = 'select * from film_info'
         # 执行查询语句，返回查询到多少条数据
