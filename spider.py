@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import requests,re,pymysql
+import requests,re,pymysql,time
 
 def get_film_url(num):
     '''
     :param num: num是24的倍数，起始值为24
     :return: 一个URL页面24部影片的访问地址
     '''
-    url = 'http://www.bt4k.com/home-popular-list-version2017061212-offset0-count%d.js' % num
+    # 获取当前年月日时，格式例如：2017061310
+    now = time.strftime("%Y%m%d%H", time.localtime())
+    url = 'http://www.bt4k.com/home-popular-list-version%s-offset0-count%d.js' % (now, num)
     bt_response = requests.get(url).content.decode('utf-8')
     pattern = re.compile(r'http:.*?(\d+).html?')
     page_num_list = re.findall(pattern, bt_response)
@@ -68,12 +70,14 @@ def db_operate(data=None, operate_type='insert', **db_info):
     conn.close()
 
 if __name__ == '__main__':
+
     # 获得24部影片的访问地址
     film_url = get_film_url(24)
-    db_info = {'host':'127.0.0.1', 'port':3306, 'user':'root','passwd':'123456', 'db':'bt4k_film', 'charset':'utf8'}
-    # 获得影片信息字典，包括影片名、bt种子地址
-    # for i in film_url:
-    #     single_film = get_bt_url(i)
-    film_data = db_operate(operate_type='select' ,**db_info)
-    for i in film_data:
-        print(i)
+    print(film_url)
+    # db_info = {'host':'127.0.0.1', 'port':3306, 'user':'root','passwd':'123456', 'db':'bt4k_film', 'charset':'utf8'}
+    # # 获得影片信息字典，包括影片名、bt种子地址
+    # # for i in film_url:
+    # #     single_film = get_bt_url(i)
+    # film_data = db_operate(operate_type='select' ,**db_info)
+    # for i in film_data:
+    #     print(i)
